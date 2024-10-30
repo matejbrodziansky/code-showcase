@@ -1,0 +1,39 @@
+/* Main */
+html {
+  font-family: sans-serif;
+}
+
+body {
+  margin: 0;
+  background-image: url("./images/bg7.jpg");
+  background-repeat: no-repeat;
+  background-size: 100vw 100vh;
+  background-position: center;
+  height: 100vh;
+  overflow-y: auto;
+}
+/* Modal component */
+.modal-content {
+  background-color: transparent !important;
+  border-color: #ffffff !important;
+}
+
+/* Config List*/
+.tablepress thead th,
+.tablepress tfoot th {
+	background-color: #34375A;
+  opacity: 0.;
+	color: #ffffff;
+}
+
+/* Config - show */
+.config-show{
+
+  text-align: center;
+  background-color: aliceblue;
+  width: 80%;
+  margin: 15px auto;
+  border-radius: 4px;
+}
+
+/* Config */
