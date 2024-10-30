@@ -1,0 +1,7 @@
+{% extends '@AppBackend/Layout/base.html.twig' %}
+
+{% block headline 'Send WebMeeting notification title'|trans({'%date%': "#{seminar_date.seminar.internalName} - #{seminar_date}"}, 'AppBundleSeminarDate') %}
+
+{% block action %}
+    {% include '@ImaticView/Component/form.html.twig' %}
+{% endblock %}

@@ -1,0 +1,3 @@
+AppBundle\Data\Handler\SeminarDate\WebMeetingNotificationSendHandler:
+    ok: Informační WebMeeting e-maily byly odeslány
+    error: Jeden nebo více WebMeeting informačních emailů nebylo možné odeslat

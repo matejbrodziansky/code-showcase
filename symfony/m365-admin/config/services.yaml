@@ -1,0 +1,53 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+    microsoft_client_id: '%env(MICROSOFT_CLIENT_ID)%'
+    microsoft_client_secret: '%env(MICROSOFT_CLIENT_SECRET)%'
+    microsoft_tenant_id: '%env(MICROSOFT_TENANT_ID)%'
+    microsoft_default_group_id: '%env(MICROSOFT_DEFAULT_GROUP_ID)%'
+    microsoft_callback_url: '%env(MICROSOFT_REDIRECT_URL)%'
+
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    guzzle.client:
+        class: GuzzleHttp\Client
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+
+    App\Service\GraphService:
+        arguments:
+            $microsoftClientId: '%microsoft_client_id%'
+            $microsoftClientSecret: '%microsoft_client_secret%'
+            $microsoftTenantId: '%microsoft_tenant_id%'
+        tags: ['controller.service_arguments']
+
+    App\Service\MicrosoftAuthService:
+        arguments:
+            $microsoftClientId: '%microsoft_client_id%'
+            $microsoftClientSecret: '%microsoft_client_secret%'
+            $microsoftDefaultGroupId: '%microsoft_default_group_id%'
+            $microsoftCallbackUrl: '%microsoft_callback_url%'
+            $client: '@guzzle.client'
+        tags: ['controller.service_arguments']
+
+
+
+    App\Controller\SecurityController:
+        arguments:
+            $microsoftClientId: '%microsoft_client_id%'
+            $microsoftClientSecret: '%microsoft_client_secret%'
+            $microsoftCallbackUrl: '%microsoft_callback_url%'
+        tags: ['controller.service_arguments']

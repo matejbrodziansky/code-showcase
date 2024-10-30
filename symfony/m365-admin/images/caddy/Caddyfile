@@ -1,0 +1,8 @@
+https://{$TLS_HOST}:443 {
+    tls {$TLS_EMAIL}
+    log {
+      format console
+      level ERROR
+      }
+    reverse_proxy app:8080
+}

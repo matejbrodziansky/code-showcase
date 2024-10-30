@@ -1,0 +1,74 @@
+version: '3'
+name: m365-admin
+services:
+  app:
+    image: m365-admin
+    labels:
+      imatic.server.serv1.server_name: ${PROJECT_SERVER_NAME:-}
+      imatic.server.serv1.location.loc1.name: '/'
+      imatic.server.serv1.location.loc1.block.proxy_pass.port: 8080
+      imatic.server.serv1.location.loc1.block.proxy_pass.protocol: 'http' # https solved on proxy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - APP_ENV=${APP_ENV}
+      - APP_SECRET=${APP_SECRET}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - TZ=Europe/Prague
+      - SENTRY_DSN_PRIVATE=${SENTRY_DSN_PRIVATE}
+      - SENTRY_ENV=${SENTRY_ENV}
+      - SENTRY_DSN_PUBLIC=${SENTRY_DSN_PUBLIC}
+      - MAILER_DSN=${MAILER_DSN}
+      - MAILER_BCC=${MAILER_BCC}
+    volumes:
+        - ./var/log:/app/var/log
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - TZ=Europe/Prague
+      - PGTZ=Europe/Prague
+    volumes:
+      - ./var/postgres-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "${DB_NAME}", "-U", "${DB_USER}" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+
+  caddy:
+    image: caddy:alpine
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./images/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    environment:
+      - TLS_HOST=$CADDY_TLS_HOST
+      - TLS_EMAIL=$CADDY_TLS_EMAIL
+    profiles: ['prod']
+    depends_on: 
+      - app
+
+volumes:
+  caddy-data:

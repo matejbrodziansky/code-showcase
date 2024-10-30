@@ -1,0 +1,9 @@
+{% set text = 'seminar_date.notification.subject_web_meeting_online_participation' %}
+
+{{ text|trans({
+    '%date%': date,
+    '%day%': day|lower ,
+    '%start_date%': date.getStartDate|date('d.m.Y'),
+    '%start_time%': date.getWebMeetingStart|date('H:i'),
+    '%city%': date.venue.searchCity,
+}, 'AppBundleMail') }}

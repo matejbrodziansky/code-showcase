@@ -1,0 +1,5 @@
+    AppBundle\Service\WebMeeting\WebMeeting:
+        arguments:
+            $webMeetingApiClient: '%env(WEBMEETING_API_CLIENT)%'
+            $webMeetingApiRequestSecret: '%env(WEBMEETING_API_REQUEST_SECRET)%'
+            $webMeetingResponseSecret: '%env(WEBMEETING_API_RESPONSE_SECRET)%'

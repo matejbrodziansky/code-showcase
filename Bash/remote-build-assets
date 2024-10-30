@@ -1,0 +1,67 @@
+#!/bin/bash
+
+source .env
+
+SOURCE_DIR="www/public/wp-content/themes/mango-jipka/styles"
+ARCHIVE_NAME="styles.tar.gz"
+REMOTE_DIR="/home/<user>/tmp/mango"
+REMOTE_USER="<user>"
+REMOTE_HOST="<server>"
+REMOTE_ASSETS_ARCHIVE="assets_styles.tar.gz"
+ASSETS_SOURCE_DIR="www/public/wp-content/themes/mango-jipka/styles/test"
+INDEX_CSS_SOURCE="www/public/wp-content/themes/mango-jipka/styles/test/styles/index.css"
+INDEX_CSS_DESTINATION="www/public/wp-content/themes/mango-jipka/assets/styles/index.css"
+
+create_archive() {
+    tar -czvf "$SOURCE_DIR/$ARCHIVE_NAME" -C "$SOURCE_DIR" . || {
+        echo "Error creating archive."
+        exit 1
+    }
+}
+
+transfer_archive() {
+    scp "$SOURCE_DIR/$ARCHIVE_NAME" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR" || {
+        echo "Error transferring archive to server."
+        exit 1
+    }
+}
+
+process_archive_on_server() {
+    ssh "$REMOTE_USER@$REMOTE_HOST" <<EOF
+        cd "$REMOTE_DIR" || exit 1
+        mkdir -p styles
+        tar -xzvf "$REMOTE_DIR/$ARCHIVE_NAME" -C "$REMOTE_DIR/styles"
+        docker run -v $REMOTE_DIR:/src mango-cli build
+        tar -czvf "$REMOTE_DIR/$REMOTE_ASSETS_ARCHIVE" -C "$REMOTE_DIR/assets" styles
+EOF
+}
+
+transfer_assets() {
+    scp "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/$REMOTE_ASSETS_ARCHIVE" "$ASSETS_SOURCE_DIR" || {
+        echo "Error transferring built assets."
+        exit 1
+    }
+}
+
+extract_assets() {
+    tar -xzvf "$ASSETS_SOURCE_DIR/$REMOTE_ASSETS_ARCHIVE" -C "$ASSETS_SOURCE_DIR" || {
+        echo "Error extracting built assets."
+        exit 1
+    }
+}
+
+copy_css() {
+    cp "$INDEX_CSS_SOURCE" "$INDEX_CSS_DESTINATION" || {
+        echo "Error copying index.css."
+        exit 1
+    }
+}
+
+create_archive
+transfer_archive
+process_archive_on_server
+transfer_assets
+extract_assets
+copy_css
+
+echo "All tasks completed successfully!"

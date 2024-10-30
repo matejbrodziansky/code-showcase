@@ -1,0 +1,175 @@
+#!/usr/bin/env bash
+
+# Run the script from the root of the repository
+
+set -euo pipefail
+
+source_branch='imatic_2.24.2'
+target_version='2.26.2'
+new_branch="imatic_${target_version}"
+
+current_dir=$(pwd)
+
+parent_dir=$(dirname "${current_dir}")
+
+source_dir=$current_dir
+target_dir="$current_dir-new"
+
+echo "Source Directory: $source_dir"
+echo "Target Directory: $target_dir"
+
+function copy_mantis {
+  if [ ! -d "${target_dir}" ]; then
+    mkdir -p "${target_dir}"
+    echo "Created directory: ${target_dir}"
+  fi
+
+  cp -r "${source_dir}"/ "${target_dir}/"
+
+  echo "Mantis files copied from ${source_dir} to ${target_dir}."
+}
+
+function checkout_new_branch {
+
+  cd $target_dir
+
+  local upstream_url="git@github.com:mantisbt/mantisbt.git"
+  local origin_url="git@github.com:Imatic-IT/imatic-mantis.git"
+
+  if ! git remote | grep -q upstream; then
+    git remote add upstream ${upstream_url}
+  fi
+
+  if ! git remote | grep -q origin; then
+    git remote add origin ${origin_url}
+  fi
+
+  git fetch upstream
+  git checkout -b "${new_branch}" "release-${target_version}"
+
+  git remote set-url origin ${origin_url}
+}
+
+function copy_and_apply_patches() {
+  cp -r "${source_dir}"/imatic-update "${target_dir}/"
+
+  cd $target_dir
+
+  git add $target_dir/imatic-update/
+  git commit -m "Added files patches."
+
+  git add .
+  git commit -m "Committing current changes before applying patches"
+
+  git apply imatic-update/allow_configuration_of_safe_links_in_markdown.patch
+  git add .
+  git commit -m "Patch Allow configuration of safe links in markdown."
+
+  git apply imatic-update/fix_assigned_to_filter_when_all_projects_are_selected.patch
+  git add .
+  git commit -m "Patch Fix 'Assigned To' filter when all projects are selected."
+
+  git apply imatic-update/make_like_queries_case_insensitive.patch
+  git add .
+  git commit -m "Patch Make like queries case insensitive."
+
+  git apply imatic-update/allow_query_manipulation_in_filters.patch
+  git add .
+  git commit -m "Patch Allow query manipulation in filters."
+
+  git apply imatic-update/role_icons.patch
+  git add .
+  git commit -m "Patch Role icons."
+
+  git apply imatic-update/custom_email_headers_event.patch
+  git add .
+  git commit -m "Patch Custom email headers event."
+
+}
+
+function add_configuration {
+  cd "${source_dir}"
+
+  local files=(
+    '.ci'
+    '.gitmodules'
+    'Dockerfile'
+    '.htaccess'
+    'Makefile'
+    'ansible'
+    'favicon.ico'
+    'imt-config/.htaccess'
+    'imt-config/php.ini'
+    '.github/workflows/cd.yml'
+    'readme-imatic.md'
+    'update-mantis'
+  )
+
+  for file in "${files[@]}"; do
+    if [ -d "${file}" ]; then
+      mkdir -p "${target_dir}/${file}"
+      cp -r "${file}"/* "${target_dir}/${file}/"
+    else
+      mkdir -p "${target_dir}/$(dirname "${file}")"
+      cp -r "${file}" "${target_dir}/${file}"
+    fi
+  done
+
+  cd "${target_dir}"
+  git add .
+  git commit -m "Added configuration files."
+}
+
+# https://stackoverflow.com/questions/11258737/restore-git-submodules-from-gitmodules/11258810#11258810
+function add_submodules {
+
+  cd $target_dir
+
+  git config -f .gitmodules --get-regexp '^submodule\..*\.path$' |
+    while read path_key path; do
+      url_key=$(echo $path_key | sed 's/\.path/.url/')
+      url=$(git config -f .gitmodules --get "$url_key")
+      git submodule add --force $url $path
+    done
+
+  git add .
+  git commit -m "Added submodules."
+}
+
+function update_composer {
+  cd $target_dir
+
+  composer config --no-plugins allow-plugins.composer/installers true
+  composer config --unset platform.php --no-interaction
+  composer require --no-interaction --no-scripts imatic-it/imatic-formatting imatic-it/imatic-sentry
+
+  git add .
+  git commit -m "Updated composer."
+
+  git push origin "${new_branch}"
+}
+
+function move_mantis {
+  cd $parent_dir
+
+  mv imatic-mantis imatic-mantis-old
+  mv imatic-mantis-new imatic-mantis
+}
+
+function main {
+  copy_mantis
+  checkout_new_branch
+  copy_and_apply_patches
+  add_configuration
+  add_submodules
+  update_composer
+  move_mantis
+
+  echo '############################################################################################################'
+  echo 'SUCCESSFULLY UPDATED MANTIS TO NEW VERSION! DO NOT FORGET TO RUN INSTALL SCRIPT! (admin/install.php)'
+  echo '############################################################################################################'
+
+  #TODO: BACKUP DATABASE WITCH BACKUP PATH
+}
+
+main

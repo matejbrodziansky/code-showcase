@@ -1,0 +1,27 @@
+{% trans_default_domain 'AppBundleSeminarParticipant' %}
+
+{% import _self as this %}
+
+<table class="table table-condensed participant-list">
+    <thead>
+        <tr>
+            <th class="text-center">{{ 'WebMeeting notified at'|trans }}</th>
+            <th class="text-center">{{ 'WebMeeting confirmed at'|trans }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for participant in value %}
+            <tr class="{{ participant.attending ? 'attending' : 'not-attending' }} {{ participant.paying ? 'paying' : 'not-paying' }}">
+                <td class="text-center">{{ this.boolean_value(participant.webMeetingNotifiedAt, 'app_datetime') }}</td>
+                <td class="text-center">{{ this.boolean_value(participant.webMeetingConfirmedAt, 'app_datetime') }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8" class="text-muted">
+                    {{ 'None'|trans }}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    {% block tfoot %}{% endblock %}
+</table>

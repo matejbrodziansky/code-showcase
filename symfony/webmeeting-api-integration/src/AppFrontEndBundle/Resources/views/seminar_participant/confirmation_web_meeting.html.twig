@@ -1,0 +1,28 @@
+{% extends '@AppFrontend/base.html.twig' %}
+
+{% trans_default_domain 'AppFrontendBundleSeminarParticipant' %}
+
+{% block headline 'Confirmation'|trans %}
+
+{% block action %}
+    <div class="alert alert-{{ result_type }}">
+        {{ "result.#{result}"|trans }}
+    </div>
+
+    {% if participant is not null %}
+        <table class="table">
+            <tr>
+                <th>{{ 'Singular'|trans({}, 'AppBundleSeminarParticipant') }}</th>
+                <td>{{ participant.name }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Singular'|trans({}, 'AppBundleSeminar') }}</th>
+                <td>{{ participant.date.date.seminar.name }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Singular'|trans({}, 'AppBundleSeminarDate') }}</th>
+                <td>{{ participant.date.date }}</td>
+            </tr>
+        </table>
+    {% endif %}
+{% endblock %}

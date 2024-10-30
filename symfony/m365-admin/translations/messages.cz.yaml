@@ -1,0 +1,7 @@
+microsoft:
+  login-by-microsoft:
+    success: |
+      Do dvou minut vám bude přidělena licence MS Teams, která bude aktivní do dnešní půlnoci. Pokud budete mít problém s přihlášením, prosím kontaktujte naše IT na adrese podpora@eduagroup.cz.
+      
+      An MS Teams license will be assigned to your account within 2 minutes. It will be valid until 12:00 midnight. If you experience any issues with logging in, please let us know at podpora@eduagroup.cz.
+    error: "Licenci už máte přidělenou. Pokud budete mít problém s přihlášením, prosím kontaktujte naše IT na adrese podpora@eduagroup.cz."

@@ -1,0 +1,41 @@
+{% extends '@AppBackend/Layout/base.html.twig' %}
+
+{% trans_default_domain 'AppBundleOrderSeminarDate' %}
+
+{% set backlink = { label: 'Return to order'|trans, route: 'appbackend_order_show', routeParams: {id: order.id} } %}
+
+{% block headline %}
+    {{ 'Order seminar date list'|trans({'%order%': order}) }}
+{% endblock %}
+
+{% block action %}
+
+    {% set table = {
+        attr: {
+            data: {
+                role: 'container',
+                initial: imatic_view_update_pager_url(uri|default(app.request.uri), 1, component_id),
+            },
+            id: 'order-seminar-date-list',
+        },
+        translationDomain: 'AppBundleOrderSeminarDate',
+        selectable: false,
+        rowActions: [
+            {label: 'Show'|trans({}, 'ImaticViewBundle'), route: 'appbackend_orderseminardate_show', routeParams: {orderId: order.id, id: '#id'}, data: {target: 'modal', 'modal-size': 'max'}, nested: [
+
+                {label: 'Send WebMeeting notification'|trans({}, 'AppBundleSeminarDate'), route: 'appbackend_orderseminardate_sendwebmeetingnotifications', routeParams: {orderId: '#order.id', orderSeminarDateId: '#id'}, condition: 'item.canSendWebMeetingNotification()', data: {target: 'modal', 'modal-size': 'normal'} },
+            ]},
+        ]
+    } %}
+
+    {% set columns = [
+        {name: 'seminar', propertyPath: 'date.seminar.internalName', format: 'text'},
+        {name: 'date', format: 'text'},
+        {name: 'numberOfAttendingParticipants', format: 'app_number', label: 'Participants'},
+        {name: 'notificationStats', format: 'ternary_stats'},
+        {name: 'certificateStats', format: 'ternary_stats'},
+    ] %}
+
+    {{ include('@ImaticView/Component/table.html.twig') }}
+
+{% endblock %}

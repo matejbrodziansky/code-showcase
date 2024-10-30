@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Microsoft Manager{% endblock %}
+
+{% block body %}
+
+    <div class="container text-center mx-auto mt-5">
+        <div class="flash-messages">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }}">{{ message|nl2br }}</div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+
+
+{% endblock %}

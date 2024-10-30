@@ -1,0 +1,38 @@
+{% extends '@AppBackend/Layout/base.html.twig' %}
+
+{% trans_default_domain 'AppBundleSeminarDate' %}
+
+{% block headline %}
+    {{ 'Seminar date list'|trans({'%seminar%': seminar.internalName}) }}
+{% endblock %}
+
+{% block action %}
+    <div class="modal-action-bar">
+        <a class="btn btn-default" href="{{ path('appbackend_seminardate_create', {seminarId: seminar.id}) }}" data-target="modal" data-modal-size="max" data-modal-on-close-mod="@reload | @reload-page">
+            {{ 'Create'|trans({}, 'ImaticViewBundle') }}
+        </a>
+    </div>
+    {% set table = {
+        attr: {
+            data: {
+                role: 'container',
+                initial: imatic_view_update_pager_url(uri|default(app.request.uri), 1, component_id),
+            },
+            id: 'seminar-date-list',
+        },
+        translationDomain: 'AppBundleSeminarDate',
+        selectable: false,
+        rowActions: [
+            {label: 'Show'|trans({}, 'ImaticViewBundle'), route: 'appbackend_seminardate_show', routeParams: {seminarId: seminar.id, id: '#id'}, data: {target: 'modal', 'modal-size': 'max'}, nested: [
+                {label: 'Send WebMeeting notification'|trans({}, 'AppBundleSeminarDate'), route: 'appbackend_seminardate_sendwebmeetingnotifications', condition: 'item.canSendWebMeetingNotification()', routeParams: {seminarId: '#seminar.id', seminarDateId: '#id'}, data: {target: 'modal', 'modal-size': 'normal'} },
+            ]},
+        ]
+    } %}
+
+    {% set columns = [
+        {name: 'webmeetingId', format: 'app_number'},
+        {name: 'webmeetingStart', format: 'time'},
+        {name: 'webmeetingEnd', format: 'time'},
+    ] %}
+
+{% endblock %}

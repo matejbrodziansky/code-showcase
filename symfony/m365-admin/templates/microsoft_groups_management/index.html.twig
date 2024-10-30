@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Microsoft Manager{% endblock %}
+
+{% block body %}
+
+
+{#            {{ dump(users) }}#}
+
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover w-100">
+                        <thead class="table-dark">
+                        <tr>
+                            <th scope="col">Display name</th>
+                            <th scope="col">Mail</th>
+                            <th scope="col">User principal name</th>
+                            <th scope="col">Business phone</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td>{{ user.displayName ?? '-' }}</td>
+                                <td>{{ user.mail ?? '-' }}</td>
+                                <td>{{ user.userPrincipalName ?? '-' }}</td>
+                                <td>{{ user.businessPhones[0] ?? '-' }}</td>
+                                <td>
+                                    {% include '/microsoft_groups_management/actions-groups-modal.html.twig' with {'user': user, 'groups': groups} %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="flash-messages">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }}">{{ message }}</div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+
+
+{% endblock %}

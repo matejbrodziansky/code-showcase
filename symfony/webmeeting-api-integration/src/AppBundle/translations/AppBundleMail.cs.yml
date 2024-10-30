@@ -1,0 +1,66 @@
+web_meeting:
+  filename:
+    chat: Manuál pro účastníky_chat
+    microphone: Manuál pro účastníky_mikrofon
+
+order:
+
+
+    notification:
+        subject_participation_on_site: Organizační pokyny k semináři %city%, %date%
+        subject_online_participation: Organizační pokyny k semináři, %date%
+        subject_web_meeting_online_participation: Přístup k online semináři %date% v %start_time% hod.
+        subject_seminar_record: Organizační pokyny k semináři
+        subject_video_course: Organizační pokyny k semináři
+
+        web_meeting_chat_online_participation_text: |
+
+          @styledLinkWithBackground(#9eff00 ; $confirmation_url; Prosím, potvrďte přijetí emailu kliknutím ZDE; black )
+
+          @vocative($participant),
+
+          pro přístup k on-line semináři „%seminar%“  který se koná v @strong(%day%, od %start_time% hodin,)
+          použijte prosím následující odkaz:
+
+          @link($web_meeting_url)
+
+          V příloze naleznete @strong(Manuál) (technické informace) pro posluchače a @strong(podkladové materiály v pdf.)
+          Tyto podklady si můžete předem vytisknout a použít je jako pomůcku k výkladu lektora.
+
+          @strong(Ujistěte se prosím, že máte aktualizovaný jeden z následujících webových prohlížečů) Google
+          Chrome, Mozilla Firefox, Microsoft Edge nebo Safari a nainstalované reproduktory či sluchátka,
+          případně mikrofon (plně postačuje integrované zařízení ve vašem PC, notebooku či tabletu).
+
+          Během semináře lze pokládat dotazy lektorovi prostřednictvím chatu. Seminář pro Vás nahráváme,
+          záznam ze semináře obdržíte následující pracovní den.
+
+          V případě jakýchkoli dotazů mě neváhejte kontaktovat.
+          Hezký den,
+
+          %signature%
+
+        web_meeting_microphone_online_participation_text: |
+
+          @styledLinkWithBackground(#9eff00 ; $confirmation_url; Prosím, potvrďte přijetí emailu kliknutím ZDE; black )
+
+          @vocative($participant),
+
+          pro přístup k on-line semináři „%seminar%“  který se koná v @strong(%day%, od %start_time% hodin,)
+          použijte prosím následující odkaz:
+
+          @link($web_meeting_url)
+
+          V příloze naleznete @strong(Manuál) (technické informace) pro posluchače a @strong(podkladové materiály v pdf.)
+          Tyto podklady si můžete předem vytisknout a použít je jako pomůcku k výkladu lektora.
+
+          @strong(Ujistěte se prosím, že máte aktualizovaný jeden z následujících webových prohlížečů) Google
+          Chrome, Mozilla Firefox, Microsoft Edge nebo Safari a nainstalované reproduktory či sluchátka,
+          případně mikrofon (plně postačuje integrované zařízení ve vašem PC, notebooku či tabletu).
+
+          Během semináře lze pokládat dotazy lektorovi prostřednictvím mikrofonu nebo chatu. Seminář pro
+          Vás nahráváme, záznam ze semináře obdržíte následující pracovní den.
+
+          V případě jakýchkoli dotazů mě neváhejte kontaktovat.
+          Hezký den,
+
+          %signature%

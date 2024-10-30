@@ -1,0 +1,30 @@
+{% extends '@App/Mail/body.html.twig' %}
+
+{% block body %}
+    {% set text = 'seminar_date.notification.web_meeting_chat_online_participation_text' %}
+
+    {% if communication_option == 'chat' %}
+        {% set text = 'seminar_date.notification.web_meeting_chat_online_participation_text' %}
+    {% elseif communication_option == 'microphone' %}
+        {% set text = 'seminar_date.notification.web_meeting_microphone_online_participation_text' %}
+    {% endif %}
+
+
+    {{ _self.build_body(
+        text,
+        {
+            '%seminar%': date.seminar.name,
+            '%signature%': client_service_director_signature,
+            '%day%': day|lower,
+            '%start_date%': date.getStartDate|date('d.m.Y'),
+            '%start_time%': date.getWebMeetingStart|date('H:i'),
+
+        },
+        {
+            participant: participant,
+            assistent_name: assistent_name,
+            web_meeting_url: web_meeting_url,
+            confirmation_url: url('appfrontend_seminarparticipant_confirmationwebmeeting', {seminarParticipantId: participant.id, webMeetingConfirmationCode: participant.webMeetingConfirmationCode}),
+        }
+    ) }}
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends '@AppBackend/Layout/base.html.twig' %}
+
+{% trans_default_domain 'AppBundleSeminarDate' %}
+
+{% block headline 'Seminar date show'|trans %}
+
+{% set page_actions = [
+    { label: 'Edit'|trans({}, 'ImaticViewBundle'), route: 'appbackend_seminardate_edit', routeParams: {seminarId: seminar.id, id: item.id} },
+    { label: 'List'|trans({}, 'ImaticViewBundle'), condition: 'hasLayout', route: 'appbackend_seminardate_list', routeParams: {seminarId: seminar.id} },
+] %}
+
+{% block action %}
+
+    {% set fields = [
+        {name: 'webmeetingId', format: 'app_number'},
+        {name: 'webmeetingStart', format: 'time' },
+        {name: 'webmeetingEnd', format: 'time'},
+        {name: 'webmeetingLink', format: 'text', propertyPath: none, formatOptions: {webmeetingLink: web_meeting_link, template: '@AppBackend/SeminarDate/web_meeting_link.html.twig'}},
+    ] %}
+
+    {% set show = {
+        translationDomain: 'AppBundleSeminarDate'
+    } %}
+
+    {% include '@ImaticView/Component/show.html.twig' %}
+
+{% endblock %}

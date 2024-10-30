@@ -1,0 +1,60 @@
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#user-modal-{{ user.id }}">
+    Groups
+</button>
+
+<!-- Modal -->
+<div class="modal fade modal-xl" id="user-modal-{{ user.id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Groups</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card card-body">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Created</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if groups %}
+                            {% for group in groups %}
+                                <tr>
+                                    <td>{{ group.displayName ?? '-' }}</td>
+                                    <td>{{ group.description ?? '' }}</td>
+                                    <td>{{ group.createdDateTime|date('d.m.Y') }}</td>
+                                    <td>
+                                        {% if group.id in user.groupsIds %}
+                                            <button class="btn btn-sm btn-secondary" disabled>Is in group</button>
+                                            <a class="btn btn-sm btn-danger"
+                                               href="{{ path('app_teams_groups_management_users_delete_from_group', {'userId' : user.id, 'groupId' : group.id} ) }}">Delete</a>
+                                        {% else %}
+
+                                            <a class="btn btn-sm btn-success"
+                                               href="{{ path('app_teams_groups_management_users_add_to_group', {'userId' : user.id, 'groupId' : group.id} ) }}">Add</a>
+                                        {% endif %}
+
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>

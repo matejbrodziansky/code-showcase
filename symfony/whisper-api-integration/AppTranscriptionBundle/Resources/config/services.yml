@@ -1,0 +1,74 @@
+services:
+
+    AppTranscriptionBundle\Service\FileService:
+        arguments:
+            $filesystem: '@Symfony\Component\Filesystem\Filesystem'
+            $audioFilesDirectory: '%audio_files_directory%'
+            $doneDirectory: '%audio_files_done_directory%'
+            $logger: '@logger'
+
+    GuzzleHttp\Client:
+        class: GuzzleHttp\Client
+
+    AppTranscriptionBundle\Service\WhisperApiService:
+        arguments:
+            $client: '@GuzzleHttp\Client'
+            $apiKey: '%openai_api_key%'
+            $apiUrl: '%openai_whisper_api_endpoint%'
+            $logger: '@logger'
+
+    AppTranscriptionBundle\Service\SisService:
+        arguments:
+            - '@doctrine.dbal.sis_connection'
+
+    AppTranscriptionBundle\Command\TranscriptionCommand:
+        arguments:
+            $transcriptionService: '@AppTranscriptionBundle\Service\TranscriptionService'
+            $logger: '@logger'
+        tags:
+            - { name: 'console.command' }
+
+    AppTranscriptionBundle\Command\CleanUpFilesCommand:
+        arguments:
+            $fileService: '@AppTranscriptionBundle\Service\FileService'
+            $logger: '@logger'
+            $cleanUpIntervalDays: '%clean_up_interval_days%'
+        tags:
+            - { name: 'console.command' }
+
+    AppTranscriptionBundle\Service\TranscriptionService:
+        arguments:
+            $fileService: '@AppTranscriptionBundle\Service\FileService'
+            $whisperApiService: '@AppTranscriptionBundle\Service\WhisperApiService'
+            $entityManager: '@doctrine.orm.entity_manager'
+            $threadHelper: '@AppTranscriptionBundle\Helper\ThreadHelper'
+            $sisService: '@AppTranscriptionBundle\Service\SisService'
+            $logger: '@logger'
+            $anonymousUserId: '%anonymous_user_id%'
+        tags:
+            - { name: 'controller.service_arguments' }
+
+
+    AppTranscriptionBundle\Helper\ThreadHelper:
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@Imatic\Bundle\DataBundle\Data\Query\QueryExecutor'
+            - '@Imatic\Bundle\DataBundle\Data\Command\CommandExecutor'
+
+
+    AppTranscriptionBundle\Controller\StudentDataController:
+        arguments:
+            $studentDataService: '@AppTranscriptionBundle\Service\StudentDataService'
+            $logger: '@logger'
+            $allowedIps: '%allowed_ips%'
+        tags:
+            - { name: 'controller.service_arguments' }
+
+
+    AppTranscriptionBundle\Service\StudentDataService:
+        arguments:
+            $sisConnection: '@doctrine.dbal.sis_connection'
+            $studentListPhoneCallsView: '%student_list_phone_calls_view_name%'
+            $logger: '@logger'
+        tags:
+            - { name: 'controller.service_arguments' }

@@ -1,0 +1,3 @@
+app_transcription:
+  resource: "@AppTranscriptionBundle/Controller/"
+  type:     annotation
